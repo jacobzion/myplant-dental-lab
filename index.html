@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dental Pickup Request</title>
+  <style>
+    :root { --bg:#0b1220; --card:#111b2e; --muted:#94a3b8; --text:#e5e7eb; --accent:#22c55e; --danger:#ef4444; --warn:#f59e0b; --line:#223150; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      background: radial-gradient(1200px 600px at 20% 0%, #132242 0%, var(--bg) 55%); color: var(--text); }
+    .wrap { max-width: 640px; margin: 0 auto; padding: 18px 14px 40px; }
+    .top { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:10px 4px 18px; }
+    .title { line-height: 1.15; }
+    .title h1 { font-size: 18px; margin: 0 0 4px; letter-spacing: .2px; }
+    .title p { margin: 0; font-size: 13px; color: var(--muted); }
+    .badge { display:inline-flex; align-items:center; gap:8px; font-size: 12px; color: var(--muted);
+      border: 1px solid rgba(34,49,80,.9); padding: 6px 10px; border-radius: 999px;
+      background: rgba(8, 13, 25, .55); white-space: nowrap; }
+    .card { background: rgba(17,27,46,.92); border: 1px solid rgba(34,49,80,.9); border-radius: 16px; padding: 14px;
+      box-shadow: 0 10px 40px rgba(0,0,0,.35); }
+    .grid { display:grid; gap: 12px; }
+    @media (min-width: 520px) { .grid-2 { grid-template-columns: 1fr 1fr; } .grid-3 { grid-template-columns: 1fr 1fr 1fr; } }
+    label { display:block; font-size: 12px; color: var(--muted); margin: 0 0 6px; }
+    input, select, textarea { width: 100%; padding: 12px 12px; border-radius: 12px; border: 1px solid var(--line);
+      background: rgba(8, 13, 25, .7); color: var(--text); outline: none; font-size: 15px; }
+    input::placeholder, textarea::placeholder { color: rgba(148,163,184,.6); }
+    textarea { min-height: 96px; resize: vertical; }
+    .req { color: #fbbf24; font-weight: 600; margin-left: 6px; }
+    .hint { font-size: 12px; color: var(--muted); margin-top: 6px; }
+    .divider { height: 1px; background: rgba(34,49,80,.9); margin: 14px 0; }
+    .banner { display:none; margin: 0 0 12px; border-radius: 14px; padding: 10px 12px;
+      border: 1px solid rgba(245,158,11,.55); background: rgba(245,158,11,.12); color: #fde68a; font-size: 13px; line-height: 1.35; }
+    .banner strong { color: #fbbf24; }
+    .btn { width: 100%; padding: 13px 14px; border: 0; border-radius: 14px;
+      background: linear-gradient(135deg, #22c55e 0%, #16a34a 60%); color: #04110a; font-size: 16px; font-weight: 700;
+      letter-spacing: .2px; cursor: pointer; }
+    .btn:disabled { opacity: .6; cursor: not-allowed; }
+    .small { font-size: 12px; color: var(--muted); text-align:center; margin-top: 10px; }
+    .toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: 18px; width: calc(100% - 24px); max-width: 640px;
+      padding: 12px 14px; border-radius: 14px; display:none; border: 1px solid rgba(34,49,80,.9);
+      background: rgba(15, 23, 42, .92); box-shadow: 0 12px 40px rgba(0,0,0,.4); }
+    .toast.ok { border-color: rgba(34,197,94,.55); }
+    .toast.err { border-color: rgba(239,68,68,.55); }
+    .toast.warn { border-color: rgba(245,158,11,.6); }
+    .toast .t { font-weight: 800; margin-bottom: 3px; }
+    .toast .m { color: var(--muted); font-size: 13px; }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="top">
+      <div class="title">
+        <h1>Dental Lab Pickup Request</h1>
+        <p>Submit a pickup request — the lab will be notified by email.</p>
+      </div>
+      <div class="badge">📱 Clinic Mobile Form</div>
+    </div>
+
+    <div class="card">
+      <div id="unverifiedBanner" class="banner">
+        ⚠ <strong>Clinic Code is missing or incomplete.</strong><br/>
+        Your request will be sent as <strong>[UNVERIFIED]</strong> to the lab’s default dispatch email
+        and CC’d to the admin for verification.
+      </div>
+
+      <form id="pickupForm">
+        <div class="grid grid-2">
+          <div>
+            <label>Clinic Code <span class="req">*</span></label>
+            <input id="clinic_code" placeholder="e.g., ABC98004" required />
+            <div class="hint">Use the code provided by the lab. (If missing, request goes as <b>[UNVERIFIED]</b>.)</div>
+          </div>
+          <div>
+            <label>Clinic Name <span class="req">*</span></label>
+            <input id="clinic_name" placeholder="e.g., ABC Dental" required />
+          </div>
+        </div>
+
+        <div class="grid grid-2" style="margin-top:12px;">
+          <div>
+            <label>Clinic Phone</label>
+            <input id="clinic_phone" placeholder="e.g., 425-123-4567" />
+          </div>
+          <div>
+            <label>Contact Email</label>
+            <input id="contact_email" type="email" placeholder="frontdesk@clinic.com" />
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="grid">
+          <div>
+            <label>Address Line 1 <span class="req">*</span></label>
+            <input id="address1" placeholder="Street address" required />
+          </div>
+        </div>
+
+        <div class="grid grid-3" style="margin-top:12px;">
+          <div>
+            <label>City <span class="req">*</span></label>
+            <input id="city" placeholder="Bellevue" required />
+          </div>
+          <div>
+            <label>State <span class="req">*</span></label>
+            <input id="state" placeholder="WA" required maxlength="2" />
+          </div>
+          <div>
+            <label>ZIP <span class="req">*</span></label>
+            <input id="zip" inputmode="numeric" placeholder="98004" required maxlength="10" />
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="grid grid-2">
+          <div>
+            <label>Pickup Date <span class="req">*</span></label>
+            <input id="pickup_date" type="date" required />
+          </div>
+          <div>
+            <label>Time Window</label>
+            <select id="time_window">
+              <option value="">No preference</option>
+              <option>8am - 10am</option>
+              <option>10am - 12pm</option>
+              <option>12pm - 2pm</option>
+              <option>2pm - 4pm</option>
+              <option>4pm - 6pm</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid" style="margin-top:12px;">
+          <div>
+            <label>Notes</label>
+            <textarea id="notes" placeholder="e.g., Please call on arrival. 2 cases ready at front desk."></textarea>
+          </div>
+        </div>
+
+        <div style="margin-top:14px;">
+          <button id="submitBtn" class="btn" type="submit">Send Pickup Request</button>
+          <div class="small">If you don’t have a Clinic Code, contact the lab.</div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="toast" class="toast">
+    <div class="t" id="toastTitle"></div>
+    <div class="m" id="toastMsg"></div>
+  </div>
+
+  <script>
+    // ✅ CHANGE THIS to your FastAPI base URL (empty string means same domain)
+    // Example: const API_BASE_URL = "https://api.yourdomain.com";
+    const API_BASE_URL = "https://axion-dental-pickup-app.netlify.app";
+
+    const form = document.getElementById("pickupForm");
+    const btn = document.getElementById("submitBtn");
+
+    const toast = document.getElementById("toast");
+    const toastTitle = document.getElementById("toastTitle");
+    const toastMsg = document.getElementById("toastMsg");
+
+    const banner = document.getElementById("unverifiedBanner");
+    const clinicCodeInput = document.getElementById("clinic_code");
+
+    function isClinicCodeLikelyValid(code) {
+      const c = (code || "").trim();
+      return c.length >= 4;
+    }
+
+    function updateUnverifiedBanner() {
+      const code = clinicCodeInput.value.trim();
+      banner.style.display = (!isClinicCodeLikelyValid(code)) ? "block" : "none";
+    }
+
+    function showToast(type, title, msg) {
+      toast.className = "toast " + type; // ok | err | warn
+      toastTitle.textContent = title;
+      toastMsg.textContent = msg;
+      toast.style.display = "block";
+      setTimeout(() => { toast.style.display = "none"; }, 5200);
+    }
+
+    function val(id) { return document.getElementById(id).value.trim(); }
+
+    // Default pickup date: today (local)
+    const d = new Date();
+    const iso = new Date(d.getTime() - d.getTimezoneOffset()*60000).toISOString().slice(0,10);
+    document.getElementById("pickup_date").value = iso;
+
+    clinicCodeInput.addEventListener("input", updateUnverifiedBanner);
+    updateUnverifiedBanner();
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      btn.disabled = true;
+      btn.textContent = "Sending...";
+
+      const payload = {
+        clinic_code: val("clinic_code"),
+        clinic_name: val("clinic_name"),
+        clinic_phone: val("clinic_phone") || null,
+        address1: val("address1"),
+        city: val("city"),
+        state: val("state"),
+        zip: val("zip"),
+        pickup_date: val("pickup_date"),
+        time_window: document.getElementById("time_window").value || null,
+        notes: val("notes") || null,
+        contact_email: val("contact_email") || null
+      };
+
+      try {
+        const url = (API_BASE_URL ? API_BASE_URL.replace(/\/$/, "") : "") + "/pickup-request";
+
+        const res = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await res.json().catch(() => ({}));
+
+        if (!res.ok) {
+          const detail = data.detail || "Failed to send request.";
+          showToast("err", "Error", detail);
+          return;
+        }
+
+        const verified = (data.verified !== undefined) ? !!data.verified : isClinicCodeLikelyValid(payload.clinic_code);
+        const routed = data.routed_by ? `Routing: ${data.routed_by}` : "Request sent.";
+
+        if (!verified) {
+          showToast("warn", "Sent as UNVERIFIED", `${routed} (default + admin CC)`);
+        } else {
+          showToast("ok", "Sent!", routed);
+        }
+
+        document.getElementById("notes").value = "";
+
+      } catch (err) {
+        showToast("err", "Network Error", "Could not reach the server. Please try again.");
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Send Pickup Request";
+      }
+    });
+  </script>
+</body>
+</html>

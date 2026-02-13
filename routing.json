@@ -1,0 +1,30 @@
+{
+  "default_recipients": ["hello.biotem@gmail.com"],
+  "admin_cc": ["hello.biotem@gmail.com"],
+
+  "clinic_routes": [
+    {
+      "clinic_code": "ABC98004",
+      "clinic_name": "ABC Dental Bellevue",
+      "recipients": ["hello.biotem@gmail.com"]
+    },
+    {
+      "clinic_code": "KIRK001",
+      "clinic_name": "Kirkland Family Dental",
+      "recipients": ["hello.biotem@gmail.com", "jacob@myplantusa.com"]
+    }
+  ],
+
+  "zip_routes": [
+    { "zips": ["98004", "98005", "98006"], "recipients": ["hello.biotem@gmail.com"] },
+    { "zips": ["98033", "98034"], "recipients": ["hello.biotem@gmail.com"] },
+    { "zips": ["98052", "98053"], "recipients": ["hello.biotem@gmail.com"] }
+  ],
+
+  "city_routes": [
+    { "cities": ["BELLEVUE"], "recipients": ["hello.biotem@gmail.com"] },
+    { "cities": ["KIRKLAND"], "recipients": ["hello.biotem@gmail.com"] },
+    { "cities": ["REDMOND"], "recipients": ["hello.biotem@gmail.com"] },
+    { "cities": ["SEATTLE"], "recipients": ["hello.biotem@gmail.com"] }
+  ]
+}
